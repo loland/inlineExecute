@@ -5,7 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace EtwBypass {
+namespace ProviderHandlePatch {
     internal class Program {
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
