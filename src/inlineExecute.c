@@ -797,13 +797,19 @@ void go(char *args, int len) {
     // restore handleAddr
     if (patchEtwHandle) {
         turnOnEtwHandle(handleAddr, handleVal);
-        BeaconPrintf(CALLBACK_OUTPUT, "[+] DotNETRuntimeHandle value restored: %x\n", *handleAddr);
+
+        if (verbose) {
+            BeaconPrintf(CALLBACK_OUTPUT, "[+] DotNETRuntimeHandle value restored: %x\n", *handleAddr);
+        }
     }
 
     // restore enable bits
     if (patchEtwEnableBits) {
         turnOnEtwEnableBits(enableBitsAddr, enableBitsVal);
-        BeaconPrintf(CALLBACK_OUTPUT, "[+] DotNETRuntimeEnableBits value restored: %x\n", *enableBitsAddr);
+        
+        if (verbose) {
+            BeaconPrintf(CALLBACK_OUTPUT, "[+] DotNETRuntimeEnableBits value restored: %x\n", *enableBitsAddr);
+        }
     }
 
     BeaconPrintf(CALLBACK_OUTPUT, "[+] Done\n");
