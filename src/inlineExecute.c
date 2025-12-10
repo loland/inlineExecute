@@ -440,7 +440,7 @@ static void cleanupCLR(HMODULE kernel32Base, CLRContext* ctx) {
         ctx->pAssembly = NULL;
     }
 
-    // unloads SacrifcialAppDomain
+    // unloads Sacrificial AppDomain
     if (ctx->pCorRuntimeHost && ctx->pSacrifcialAppDomain) {
         ctx->pCorRuntimeHost->lpVtbl->UnloadDomain(ctx->pCorRuntimeHost, (IUnknown *)(ctx->pSacrifcialAppDomain));
     } 
@@ -474,7 +474,7 @@ static void cleanupCLR(HMODULE kernel32Base, CLRContext* ctx) {
     _FreeConsole pFreeConsole = (_FreeConsole)getProcAddr(kernel32Base, "FreeConsole");
     pFreeConsole();
 
-    // BeaconPrintf(CALLBACK_OUTPUT, "[+] CLR cleanup complete\n");
+    BeaconPrintf(CALLBACK_OUTPUT, "[+] CLR cleanup complete\n");
 }
 
 static void restoreStd(HMODULE kernel32Base, HANDLE hOriginalStdout, HANDLE hWritePipe) {
@@ -882,6 +882,15 @@ void doScan() {
     HMODULE clrBase = getImageBase(L"clr.dll");
     if (clrBase == NULL) {
         HMODULE kernel32Base = getImageBase(L"KERNEL32.DLL");
+        
+        BOOL result;
+
+        // load clr.dll into the current process
+        CLRContext ctx;
+        MSVCRT$memset(&ctx, 0, sizeof(ctx));
+        startCLR(&ctx, 0);
+        cleanupCLR(kernel32Base, &ctx);
+
         _LoadLibraryA loadLibraryA = (_LoadLibraryA)getProcAddr(kernel32Base, "LoadLibraryA");
         clrBase = loadLibraryA("clr.dll");
 
@@ -937,6 +946,7 @@ void go(char *args, int len) {
 
     // initialize custom context struct to hold CLR values
     CLRContext ctx;
+    MSVCRT$memset(&ctx, 0, sizeof(ctx));
     result = startCLR(&ctx, verbose);
     if (!result) {
         cleanupCLR(kernel32Base, &ctx);
